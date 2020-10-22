@@ -1,8 +1,6 @@
 import higherkindness.droste._
 import higherkindness.droste.data._
-import higherkindness.droste.syntax.all._
 import cats._
-import cats.implicits._
 
 import org.scalacheck.{ Prop, Properties }
 
