@@ -11,8 +11,11 @@ scalacOptions ++= Seq(
   "-language:higherKinds"
 )
 
+addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVersion.full)
+
 libraryDependencies ++= Seq(
-  "io.higherkindness" %% "droste-core"              % "0.8.0",
-  "org.scalatest"     %% "scalatest"                % "3.2.2",
-  "org.scalacheck"    %% "scalacheck"               % "1.14.3"
+  "io.higherkindness"          %% "droste-core"               % "0.8.0",
+  "io.chrisdavenport"          %% "cats-scalacheck"           % "0.3.0" % Test,
+  "org.typelevel"              %% "cats-laws"                 % "2.0.0" % Test,
+  "com.github.alexarchambault" %% "scalacheck-shapeless_1.14" % "1.2.3" % Test
 )
