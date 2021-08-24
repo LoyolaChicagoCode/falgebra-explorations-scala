@@ -91,16 +91,16 @@ object NatFProps extends Properties("NatF") {
   val fromInt = scheme.ana(fromIntCoA)
   property("ana0") = Prop { toInt(fromInt(0)) === 0 }
   property("ana7") = Prop { toInt(fromInt(7)) === 7 }
-  property("anaForall") = Prop.forAll { i: Int => (i >= 0 && i < 100000) ==> { toInt(fromInt(i)) === i } }
+  property("anaForall") = Prop.forAll { (i: Int) => (i >= 0 && i < 100000) ==> { toInt(fromInt(i)) === i } }
 
   val fromToInt = scheme.hylo(toIntA, fromIntCoA)
   property("hylo0") = Prop { fromToInt(0) === 0 }
   property("hylo7") = Prop { fromToInt(7) === 7 }
   property("hyloBig") = Prop { val big = 5000; fromToInt(big) === big }
-  property("hyloForall") = Prop.forAll { i: Int => (i >= 0 && i < 100000) ==> { fromToInt(i) === i } }
+  property("hyloForall") = Prop.forAll { (i: Int) => (i >= 0 && i < 100000) ==> { fromToInt(i) === i } }
 
   // TODO this causes a stack overflow -> need to make stack-safe by converting to hylomorphism
-  // property("anaForall") = Prop.forAll { i: Int => i >= 0 ==> { toInt(fromInt(i)) === i } }
+  // property("anaForall") = Prop.forAll { (i: Int) => i >= 0 ==> { toInt(fromInt(i)) === i } }
 
   /**
    * Addition to a number `m` as an `NatF`-algebra for carrier object
