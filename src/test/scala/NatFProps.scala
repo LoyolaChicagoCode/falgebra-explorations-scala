@@ -24,25 +24,22 @@ object NatFProps extends Properties("NatF") {
    *
    * @tparam T argument (type parameter) of the endofunctor
    */
-  enum NatF[+T]:
-    case Zero
+  enum NatF[+T] derives CanEqual:
+    case Zero extends NatF[Nothing]
     case Succ[+T](n: T) extends NatF[T]
 
-  /** Typesafe equality for instances of `NatF` */
-  given CanEqual[NatF[Nothing], NatF[_]] = CanEqual.derived
-
   import NatF._
+
+  given CanEqual[NatF[Nothing], NatF[_]] = CanEqual.derived
 
   /**
    * Implicit value for declaring `NatF` as an instance of
    * typeclass `Functor` in scalaz.
    */
   implicit object natFFunctor extends Functor[NatF] {
-    override def map[T, U](fa: NatF[T])(f: T => U): NatF[U] = {
-      fa match {
+    override def map[T, U](fa: NatF[T])(f: T => U): NatF[U] = fa match {
       case Zero => Zero
       case Succ(n) => Succ(f(n))
-    }
     }
   }
 
@@ -52,12 +49,9 @@ object NatFProps extends Properties("NatF") {
    */
   type Nat = Fix[NatF]
 
-  /** Typesafe equality for instances of `Nat` */
-  implicit val natEq: Eq[Nat] = Eq.fromUniversalEquals
-
   // Factory methods for convenience.
-  val zero = Fix[NatF](Zero)
-  val succ = (n: Nat) => Fix[NatF](Succ(n))
+  val zero = Fix(Zero)
+  val succ = (n: Nat) => Fix(Succ(n))
 
   // some instances
   val one = succ(zero)
@@ -76,8 +70,8 @@ object NatFProps extends Properties("NatF") {
   // Using the catamorphism, we now can fold the `toInt` algebra into instances.
   // (This is an example of recursion.)
   val toInt = scheme.cata(toIntA)
-  property("cata0") = Prop { toInt(zero) === 0 }
-  property("cata3") = Prop { toInt(succ(succ(succ(zero)))) === 3 }
+  property("cata0") = Prop { toInt(zero) == 0 }
+  property("cata3") = Prop { toInt(succ(succ(succ(zero)))) == 3 }
 
   /**
    * Conversion from `Int` as an `NatF`-coalgebra
@@ -93,18 +87,18 @@ object NatFProps extends Properties("NatF") {
   // we can now unfold a `Nat` from an `Int`.
   // (This is an example of corecursion.)
   val fromInt = scheme.ana(fromIntCoA)
-  property("ana0") = Prop { toInt(fromInt(0)) === 0 }
-  property("ana7") = Prop { toInt(fromInt(7)) === 7 }
-  property("anaForall") = Prop.forAll { (i: Int) => (i >= 0 && i < 100000) ==> { toInt(fromInt(i)) === i } }
+  property("ana0") = Prop { toInt(fromInt(0)) == 0 }
+  property("ana7") = Prop { toInt(fromInt(7)) == 7 }
+  property("anaForall") = Prop.forAll { (i: Int) => (i >= 0 && i < 100000) ==> { toInt(fromInt(i)) == i } }
 
   val fromToInt = scheme.hylo(toIntA, fromIntCoA)
-  property("hylo0") = Prop { fromToInt(0) === 0 }
-  property("hylo7") = Prop { fromToInt(7) === 7 }
-  property("hyloBig") = Prop { val big = 5000; fromToInt(big) === big }
-  property("hyloForall") = Prop.forAll { (i: Int) => (i >= 0 && i < 100000) ==> { fromToInt(i) === i } }
+  property("hylo0") = Prop { fromToInt(0) == 0 }
+  property("hylo7") = Prop { fromToInt(7) == 7 }
+  property("hyloBig") = Prop { val big = 5000; fromToInt(big) == big }
+  property("hyloForall") = Prop.forAll { (i: Int) => (i >= 0 && i < 100000) ==> { fromToInt(i) == i } }
 
   // TODO this causes a stack overflow -> need to make stack-safe by converting to hylomorphism
-  // property("anaForall") = Prop.forAll { (i: Int) => i >= 0 ==> { toInt(fromInt(i)) === i } }
+  // property("anaForall") = Prop.forAll { (i: Int) => i >= 0 ==> { toInt(fromInt(i)) == i } }
 
   /**
    * Addition to a number `m` as an `NatF`-algebra for carrier object
@@ -119,10 +113,10 @@ object NatFProps extends Properties("NatF") {
 
   val plus = (m: Nat) => scheme.cata(plusA(m))
 
-  property("cata00") = Prop { toInt(plus(zero)(zero)) === 0 }
-  property("cata03") = Prop { toInt(plus(three)(zero)) === 3 }
-  property("cata30") = Prop { toInt(plus(zero)(three)) === 3 }
-  property("cata23") = Prop { toInt(plus(three)(two)) === 5 }
+  property("cata00") = Prop { toInt(plus(zero)(zero)) == 0 }
+  property("cata03") = Prop { toInt(plus(three)(zero)) == 3 }
+  property("cata30") = Prop { toInt(plus(zero)(three)) == 3 }
+  property("cata23") = Prop { toInt(plus(three)(two)) == 5 }
 
   /**
    * Multiplication by a number `m` as an `NatF`-algebra for carrier object
@@ -137,10 +131,10 @@ object NatFProps extends Properties("NatF") {
 
   val times = (m: Nat) => scheme.cata(timesA(m))
 
-  property("cataOnTimes00") = Prop { toInt(times(zero)(zero)) === 0 }
-  property("cataOnTimes03") = Prop { toInt(times(three)(zero)) === 0 }
-  property("cataOnTimes30") = Prop { toInt(times(zero)(three)) === 0 }
-  property("cataOnTimes23") = Prop { toInt(times(three)(two)) === 6 }
+  property("cataOnTimes00") = Prop { toInt(times(zero)(zero)) == 0 }
+  property("cataOnTimes03") = Prop { toInt(times(three)(zero)) == 0 }
+  property("cataOnTimes30") = Prop { toInt(times(zero)(three)) == 0 }
+  property("cataOnTimes23") = Prop { toInt(times(three)(two)) == 6 }
 
   /**
    * Argument function for `para`. Returns `one` when there is no accumulated
