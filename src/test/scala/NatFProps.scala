@@ -24,12 +24,14 @@ object NatFProps extends Properties("NatF") {
    *
    * @tparam T argument (type parameter) of the endofunctor
    */
-  sealed trait NatF[+T]
-  case object Zero extends NatF[Nothing]
-  case class Succ[+T](n: T) extends NatF[T]
+  enum NatF[+T]:
+    case Zero extends NatF[Nothing]
+    case Succ[+T](n: T) extends NatF[T]
 
   /** Typesafe equality for instances of `NatF` */
   implicit def natFEq[T]: Eq[NatF[T]] = Eq.fromUniversalEquals
+
+  import NatF._
 
   /**
    * Implicit value for declaring `NatF` as an instance of
