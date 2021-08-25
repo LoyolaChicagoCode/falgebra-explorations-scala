@@ -25,11 +25,11 @@ object NatFProps extends Properties("NatF") {
    * @tparam T argument (type parameter) of the endofunctor
    */
   enum NatF[+T]:
-    case Zero extends NatF[Nothing]
+    case Zero
     case Succ[+T](n: T) extends NatF[T]
 
   /** Typesafe equality for instances of `NatF` */
-  implicit def natFEq[T]: Eq[NatF[T]] = Eq.fromUniversalEquals
+  given CanEqual[NatF[Nothing], NatF[_]] = CanEqual.derived
 
   import NatF._
 
@@ -38,9 +38,11 @@ object NatFProps extends Properties("NatF") {
    * typeclass `Functor` in scalaz.
    */
   implicit object natFFunctor extends Functor[NatF] {
-    override def map[T, U](fa: NatF[T])(f: T => U): NatF[U] = fa match {
+    override def map[T, U](fa: NatF[T])(f: T => U): NatF[U] = {
+      fa match {
       case Zero => Zero
       case Succ(n) => Succ(f(n))
+    }
     }
   }
 
@@ -67,8 +69,8 @@ object NatFProps extends Properties("NatF") {
    * for carrier object `Int` in the category Scala types.
    */
   val toIntA: Algebra[NatF, Int] = Algebra {
-    case Succ(n) if n >= 0 => n + 1
     case Zero => 0
+    case Succ(n) if n >= 0 => n + 1
   }
 
   // Using the catamorphism, we now can fold the `toInt` algebra into instances.
@@ -83,8 +85,8 @@ object NatFProps extends Properties("NatF") {
    * (generator for corecursion).
    */
   val fromIntCoA: Coalgebra[NatF, Int] = Coalgebra {
-    case n if n > 0 => Succ(n - 1)
     case 0 => Zero
+    case n if n > 0 => Succ(n - 1)
   }
 
   // Using the anamorphism on a coalgebra such as `fromInt`,
