@@ -1,9 +1,9 @@
-import cats._
-import cats.implicits._
-import higherkindness.droste._
-import higherkindness.droste.data._
+import cats.*
+import cats.implicits.*
+import higherkindness.droste.*
+import higherkindness.droste.data.*
 import org.scalacheck.{ Prop, Properties }
-import Prop._
+import Prop.*
 
 /**
  * In this example, we represent natural numbers
