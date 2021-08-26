@@ -30,6 +30,7 @@ object NatFProps extends Properties("NatF") {
 
   import NatF._
 
+  /** Enable typesafe equality on `NatF` for pattern matching.` */
   given CanEqual[NatF[Nothing], NatF[_]] = CanEqual.derived
 
   /**
