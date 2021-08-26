@@ -29,16 +29,16 @@ object NatFProps extends Properties("NatF") {
     case Zero extends NatF[Nothing]
     case Succ[+T](n: T) extends NatF[T]
 
-  import NatF._
+  import NatF.{given, *}
 
-  /** Enable typesafe equality for pattern matching `Zero` in the functor and algebras below. */
-  given CanEqual[NatF[Nothing], NatF[_]] = CanEqual.derived
+  /** Enable typesafe equality (hypothetical) between `Nothing` and any other type. */
+  given CanEqual[Nothing, Any] = CanEqual.derived
 
   /**
    * Implicit value for declaring `NatF` as an instance of
    * typeclass `Functor` in scalaz.
    */
-  implicit object natFFunctor extends Functor[NatF] {
+  given Functor[NatF] = new Functor[NatF] {
     override def map[T, U](fa: NatF[T])(f: T => U): NatF[U] = fa match {
       case Zero => Zero
       case Succ(n) => Succ(f(n))
@@ -50,6 +50,8 @@ object NatFProps extends Properties("NatF") {
    * as carrier object for initial algebra.
    */
   type Nat = Fix[NatF]
+
+  given CanEqual[Nat, Nat] = CanEqual.derived
 
   // Factory methods for convenience.
   val zero = Fix(Zero)
