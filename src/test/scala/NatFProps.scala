@@ -10,6 +10,7 @@ import Prop._
  * essentially as lists without item values:
  *
  * 0 = zero
+ *
  * 3 = succ(succ(succ(zero)))
  *
  * We can then define operations such as addition on these.
@@ -30,7 +31,7 @@ object NatFProps extends Properties("NatF") {
 
   import NatF._
 
-  /** Enable typesafe equality on `NatF` for pattern matching.` */
+  /** Enable typesafe equality for pattern matching `Zero` in the functor and algebras below. */
   given CanEqual[NatF[Nothing], NatF[_]] = CanEqual.derived
 
   /**
