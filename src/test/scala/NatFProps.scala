@@ -35,12 +35,11 @@ object NatFProps extends Properties("NatF") {
   given CanEqual[Nothing, Any] = CanEqual.derived
 
   /**
-   * Implicit value for declaring `NatF` as an instance of
-   * typeclass `Functor` in scalaz.
+   * Declaration of `NatF` as an instance of typeclass `Functor` in Cats.
    */
   given Functor[NatF] = new Functor[NatF] {
     override def map[T, U](fa: NatF[T])(f: T => U): NatF[U] = fa match {
-      case Zero => Zero
+      case z @ Zero => z
       case Succ(n) => Succ(f(n))
     }
   }
