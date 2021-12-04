@@ -15,7 +15,7 @@ import Prop.*
  *
  * We can then define operations such as addition on these.
  */
-object NatFProps extends Properties("NatF") {
+object NatFProps extends Properties("NatF"):
 
   /**
    * Endofunctor for (non-generic) F-algebra in the category Scala types:
@@ -38,10 +38,9 @@ object NatFProps extends Properties("NatF") {
    * Declaration of `NatF` as an instance of typeclass `Functor` in Cats.
    */
   given Functor[NatF] = new Functor[NatF] {
-    override def map[T, U](fa: NatF[T])(f: T => U): NatF[U] = fa match {
+    override def map[T, U](fa: NatF[T])(f: T => U): NatF[U] = fa match
       case Zero => Zero
       case Succ(n) => Succ(f(n))
-    }
   }
 
   /**
@@ -165,4 +164,4 @@ object NatFProps extends Properties("NatF") {
   //  (0 to 5) zip Seq(1, 1, 2, 6, 24, 120) foreach { case (arg, result) =>
   //    µ.unfold(arg)(fromInt) para oneOrTimes cata toInt assert_=== result
   //  }
-}
+end NatFProps
