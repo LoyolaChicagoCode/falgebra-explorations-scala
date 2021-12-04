@@ -39,7 +39,7 @@ object NatFProps extends Properties("NatF") {
    */
   given Functor[NatF] = new Functor[NatF] {
     override def map[T, U](fa: NatF[T])(f: T => U): NatF[U] = fa match {
-      case z @ Zero => z
+      case Zero => Zero
       case Succ(n) => Succ(f(n))
     }
   }
