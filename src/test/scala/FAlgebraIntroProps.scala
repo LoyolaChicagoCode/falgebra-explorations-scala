@@ -95,7 +95,7 @@ object FAlgebraIntroProps extends Properties("Intro"):
 
   type ExprFAlgebra[R] = ExprF[R] => R
 
-  // This brings back recursion by plugging the functor into itself.
+  // ExprR brings back recursion by plugging the ExprF functor into itself.
   // The cata method is equivalent to dry above.
 
   case class ExprR(tail: ExprF[ExprR]) derives CanEqual:
