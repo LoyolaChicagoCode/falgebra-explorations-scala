@@ -10,7 +10,8 @@ scalacOptions ++= Seq(
   "-unchecked",
   "-Yexplicit-nulls",
   "-language:strictEquality",
-  "-language:higherKinds"
+  "-language:higherKinds",
+  "-Ykind-projector:underscores"
 )
 
 libraryDependencies ++= Seq(
