@@ -15,15 +15,15 @@ object FAlgebraIntroProps extends Properties("Intro"):
 
   def size(e: Expr): Int = e match
     case Constant(v) => 1
-    case Plus(es) => 1 + es.map(height).sum
+    case Plus(es)    => 1 + es.map(height).sum
 
   def height(e: Expr): Int = e match
     case Constant(v) => 1
-    case Plus(es) => 1 + es.map(height).max
+    case Plus(es)    => 1 + es.map(height).max
 
   def evaluate(e: Expr): Int = e match
     case Constant(v) => v
-    case Plus(es) => es.map(evaluate).sum
+    case Plus(es)    => es.map(evaluate).sum
 
   // If Minus existed, it would evaluate like this:
   // case Minus(es) => es.map(evaluate).foldLeft(0)((x, y) => x - y))
@@ -34,7 +34,7 @@ object FAlgebraIntroProps extends Properties("Intro"):
 
   def scale(factor: Int)(e: Expr): Expr = e match
     case Constant(v) => Constant(factor * v)
-    case Plus(es) => Plus(es.map(scale(factor)))
+    case Plus(es)    => Plus(es.map(scale(factor)))
 
   // Let's run a quick test.
 
@@ -49,14 +49,14 @@ object FAlgebraIntroProps extends Properties("Intro"):
     def onPlus(results: List[Int]) = 1 + results.sum
     e match
       case Constant(v) => onConstant(v)
-      case Plus(es) => onPlus(es.map(size1))
+      case Plus(es)    => onPlus(es.map(size1))
 
   def height1(e: Expr): Int =
     def onConstant(value: Int) = 1
     def onPlus(results: List[Int]) = 1 + results.max
     e match
       case Constant(v) => onConstant(v)
-      case Plus(es) => onPlus(es.map(height1))
+      case Plus(es)    => onPlus(es.map(height1))
 
   property("Expr.size1") = Prop { size1(e) == 3 }
 
@@ -66,14 +66,15 @@ object FAlgebraIntroProps extends Properties("Intro"):
 
   def dry[R](onConstant: Int => R, onPlus: List[R] => R)(e: Expr): R = e match
     case Constant(v) => onConstant(v)
-    case Plus(es) => onPlus(es.map(dry(onConstant, onPlus)))
+    case Plus(es)    => onPlus(es.map(dry(onConstant, onPlus)))
 
   // Now we can reimplement the behaviors in a much more DRY way:
 
   def size2(e: Expr): Int = dry(v => 1, rs => 1 + rs.sum)(e)
   def height2(e: Expr): Int = dry(v => 1, rs => 1 + rs.max)(e)
   def evaluate2(e: Expr): Int = dry(v => v, rs => rs.sum)(e)
-  def scale2(factor: Int)(e: Expr): Expr = dry(v => Constant(factor * v), rs => Plus(rs))(e)
+  def scale2(factor: Int)(e: Expr): Expr =
+    dry(v => Constant(factor * v), rs => Plus(rs))(e)
 
   property("Expr.evaluate2") = Prop { evaluate2(e) == 8 }
 
@@ -113,19 +114,19 @@ object FAlgebraIntroProps extends Properties("Intro"):
 
   val sizeAlg: ExprFAlgebra[Int] =
     case ExprF.Constant(v) => 1
-    case ExprF.Plus(es) => 1 + es.sum
+    case ExprF.Plus(es)    => 1 + es.sum
 
   val heightAlg: ExprFAlgebra[Int] =
     case ExprF.Constant(v) => 1
-    case ExprF.Plus(es) => 1 + es.max
+    case ExprF.Plus(es)    => 1 + es.max
 
   val evaluateAlg: ExprFAlgebra[Int] =
     case ExprF.Constant(v) => v
-    case ExprF.Plus(es) => es.sum
+    case ExprF.Plus(es)    => es.sum
 
   def scaleAlg(factor: Int): ExprFAlgebra[ExprR] =
     case ExprF.Constant(v) => ExprR.constant(factor * v)
-    case ExprF.Plus(es) => ExprR.plus(es)
+    case ExprF.Plus(es)    => ExprR.plus(es)
 
   val e1 = ExprR.plus(List(ExprR.constant(5), ExprR.constant(3)))
 
@@ -136,7 +137,11 @@ object FAlgebraIntroProps extends Properties("Intro"):
 
   trait Functor[F[_]]:
     def mapImpl[A, B](fa: F[A])(f: A => B): F[B]
-    extension [A](fa: F[A]) def map[B](f: A => B): F[B] = mapImpl(fa)(f) // provides convenient fa.map(f) syntax
+    extension [A](
+        fa: F[A]
+    )
+      def map[B](f: A => B): F[B] =
+        mapImpl(fa)(f) // provides convenient fa.map(f) syntax
 
   type FAlgebra[F[_], R] = F[R] => R
 
@@ -165,26 +170,30 @@ object FAlgebraIntroProps extends Properties("Intro"):
   type NelF[H, T] = (H, Option[T])
 
   given consFunctor[H]: Functor[NelF[H, _]] with
-    override def mapImpl[A, B](e: NelF[H, A])(f: A => B): NelF[H, B] = (e._1, e._2.map(f))
+    override def mapImpl[A, B](e: NelF[H, A])(f: A => B): NelF[H, B] =
+      (e._1, e._2.map(f))
 
   // (Technically, NelF is a bifunctor, i.e., a functor in terms of both H and T.
   // The functor in terms of H corresponds to a map method for transforming the elements of the list.
   // Here we focus on the functor in terms of T for defining the recursive structure and behaviors.)
 
-  def cons[H](value: H, next: Fix[NelF[H, _]]) = Fix[NelF[H, _]](value, Some(next))
+  def cons[H](value: H, next: Fix[NelF[H, _]]) =
+    Fix[NelF[H, _]](value, Some(next))
   def point[H](value: H) = Fix[NelF[H, _]](value, None)
 
   type NelAlgebra[H, R] = NelF[H, R] => R
 
   def lengthAlg[H]: NelAlgebra[H, Int] =
     case (_, Some(n)) => 1 + n
-    case (_, None) => 1
+    case (_, None)    => 1
 
   def sumAlg: NelAlgebra[Int, Int] =
     case (i, Some(s)) => i + s
-    case (i, None) => i
+    case (i, None)    => i
 
   val l = cons(1, cons(2, point(3)))
+
+  println("sum = " + l.cata(sumAlg))
 
   property("Nel.length") = Prop { l.cata(lengthAlg) == 3 }
   property("Nel.sum") = Prop { l.cata(sumAlg) == 6 }
