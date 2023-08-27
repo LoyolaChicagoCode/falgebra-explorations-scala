@@ -39,7 +39,7 @@ object FAlgebraIntroProps extends Properties("Intro"):
   // Let's run a quick test.
 
   val e = Plus(List(Constant(5), Constant(3)))
-  property("Expr.evaluate") = Prop { evaluate2(e) == 8 }
+  property("Expr.evaluate") = Prop { evaluate(e) == 8 }
 
   // Next, we'll reorganize the implementations of the behaviors a tiny bit
   // by using auxiliary methods onConstant and onPlus.
@@ -128,7 +128,9 @@ object FAlgebraIntroProps extends Properties("Intro"):
     case ExprF.Constant(v) => ExprR.constant(factor * v)
     case ExprF.Plus(es)    => ExprR.plus(es)
 
+  val c6 = ExprR.constant(6)
   val e1 = ExprR.plus(List(ExprR.constant(5), ExprR.constant(3)))
+  val e2 = ExprR.plus(List(ExprR.constant(10), ExprR.constant(6)))
 
   property("ExprR.evaluate") = Prop { e1.cata(evaluateAlg) == 8 }
 
@@ -137,9 +139,7 @@ object FAlgebraIntroProps extends Properties("Intro"):
 
   trait Functor[F[_]]:
     def mapImpl[A, B](fa: F[A])(f: A => B): F[B]
-    extension [A](
-        fa: F[A]
-    )
+    extension [A](fa: F[A])
       def map[B](f: A => B): F[B] =
         mapImpl(fa)(f) // provides convenient fa.map(f) syntax
 
@@ -159,9 +159,11 @@ object FAlgebraIntroProps extends Properties("Intro"):
   def constant(value: Int) = Fix[ExprF](ExprF.Constant(value))
   def plus(children: List[Fix[ExprF]]) = Fix[ExprF](ExprF.Plus(children))
 
-  val e2 = plus(List(constant(5), constant(3)))
+  val e3 = plus(List(constant(5), constant(3)))
 
-  property("ExprFix.evaluate") = Prop { e2.cata(evaluateAlg) == 8 }
+  property("ExprFix.evaluate") = Prop { e3.cata(evaluateAlg) == 8 }
+  property("ExprFix.scale1") = Prop { constant(3).cata(scaleAlg(2)) == c6 }
+  property("ExprFix.scale2") = Prop { e3.cata(scaleAlg(2)) == e2 }
 
   // Finally, we can use these generalized building blocks to define other structures,
   // such as nodes in a non-empty linked list (NEL), where H is the generic type of
@@ -193,6 +195,8 @@ object FAlgebraIntroProps extends Properties("Intro"):
 
   val l = cons(1, cons(2, point(3)))
 
+  println("l = " + l)
+  println("len = " + l.cata(lengthAlg))
   println("sum = " + l.cata(sumAlg))
 
   property("Nel.length") = Prop { l.cata(lengthAlg) == 3 }
