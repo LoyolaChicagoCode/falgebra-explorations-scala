@@ -25,7 +25,7 @@ object NelFProps extends Properties("Intro"):
 
   type Nel[H] = Fix[NelF[H, _]]
 
-  given consFunctor[H]: Functor[NelF[H, _]] with
+  given nelFunctor[H]: Functor[NelF[H, _]] with
     override def mapImpl[A, B](e: NelF[H, A])(f: A => B): NelF[H, B] =
       (e._1, e._2.map(f))
 
