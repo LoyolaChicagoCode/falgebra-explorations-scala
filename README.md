@@ -10,7 +10,7 @@
 Basic examples of recursive structures and behaviors based on F-algebras 
 (see also [this introduction](https://bartoszmilewski.com/2013/06/10/understanding-f-algebras).
 
-These examples use Scala's higher-kinded types directly instead of relying on any third-party libraries for category theory or recursion schemes.
+For pedagogical reasons, these examples use Scala's higher-kinded types directly instead of relying on any third-party libraries for category theory or recursion schemes.
 
 This project also illustrates property-based testing using [ScalaCheck](https://www.scalacheck.org).
 

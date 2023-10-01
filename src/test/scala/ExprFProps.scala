@@ -1,7 +1,7 @@
 import org.scalacheck.Prop.*
 import org.scalacheck.{Prop, Properties}
 
-object ExprFProps extends Properties("Intro"):
+object ExprFProps extends Properties("ExprF"):
 
   // We'll start with a simplified version of the expressions structure.
 
@@ -73,8 +73,7 @@ object ExprFProps extends Properties("Intro"):
   def size2(e: Expr): Int = dry(v => 1, rs => 1 + rs.sum)(e)
   def height2(e: Expr): Int = dry(v => 1, rs => 1 + rs.max)(e)
   def evaluate2(e: Expr): Int = dry(v => v, rs => rs.sum)(e)
-  def scale2(factor: Int)(e: Expr): Expr =
-    dry(v => Constant(factor * v), rs => Plus(rs))(e)
+  def scale2(factor: Int)(e: Expr): Expr = dry(v => Constant(factor * v), rs => Plus(rs))(e)
 
   property("Expr.evaluate2") = Prop { evaluate2(e) == 8 }
 
@@ -134,22 +133,12 @@ object ExprFProps extends Properties("Intro"):
 
   property("ExprR.evaluate") = Prop { e1.cata(evaluateAlg) == 8 }
 
-  // The cool thing is that we can make the ExprR type parametric in the functor F.
+  // The cool thing is that we can make the recursive type (ExprR) parametric in the functor F.
   // Then we'll have to write cata only once, whether the structure is based on ExprF or any other functor.
-
-  trait Functor[F[_]]:
-    def mapImpl[A, B](fa: F[A])(f: A => B): F[B]
-    extension [A](fa: F[A])
-      def map[B](f: A => B): F[B] =
-        mapImpl(fa)(f) // provides convenient fa.map(f) syntax
-
-  type FAlgebra[F[_], R] = F[R] => R
-
-  case class Fix[F[_]: Functor](tail: F[Fix[F]]) derives CanEqual:
-    def cata[R](alg: FAlgebra[F, R]): R = alg(tail.map(c => c.cata(alg)))
+  // The building blocks for this approach have already been moved to a common source file.
 
   // To retrofit ExprF into this generalized approach, we need to define a functor instance for
-  // it where we implement the map method (in terms of the one already built into ExprF).
+  // it where we implement the map method (as the one already defined for ExprF).
 
   given exprFunctor: Functor[ExprF] with
     override def mapImpl[A, B](e: ExprF[A])(f: A => B): ExprF[B] = e.map(f)

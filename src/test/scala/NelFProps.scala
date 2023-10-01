@@ -1,25 +1,13 @@
 import org.scalacheck.Prop.*
 import org.scalacheck.{Prop, Properties}
 
-object NelFProps extends Properties("Intro"):
+object NelFProps extends Properties("NelF"):
 
   // The cool thing is that we can make the ExprR type parametric in the functor F.
-  // Then we'll have to write cata only once, whether the structure is based on ExprF or any other functor.
+  // Then we'll have to write cata only once, whether the structure is based on NelF or any other functor.
 
-  trait Functor[F[_]]:
-    def mapImpl[A, B](fa: F[A])(f: A => B): F[B]
-    extension [A](fa: F[A])
-      // provides convenient fa.map(f) syntax
-      def map[B](f: A => B): F[B] = mapImpl(fa)(f)
-
-  type FAlgebra[F[_], R] = F[R] => R
-
-  case class Fix[F[_]: Functor](tail: F[Fix[F]]) derives CanEqual:
-    def cata[R](alg: FAlgebra[F, R]): R = alg(tail.map(c => c.cata(alg)))
-
-  // Finally, we can use these generalized building blocks to define other structures,
-  // such as nodes in a non-empty linked list (NEL), where H is the generic type of
-  // the value stored in the node and T is the type parameter of the functor.
+  // Here, we are using our generalized building blocks to define nodes in a non-empty linked list (NEL),
+  // where H is the generic type of the value stored in the node and T is the type parameter of the functor.
 
   type NelF[H, T] = (H, Option[T])
 
@@ -63,12 +51,5 @@ object NelFProps extends Properties("Intro"):
   property("l(1)") = Prop { l.tail._2.get.tail._1 == 2 }
   property("Nel.length") = Prop { l.cata(lengthAlg) == 3 }
   property("Nel.sum") = Prop { l.cata(sumAlg) == 6 }
-
-// NOTE For pedagogical reasons, we eliminated the dependencies on the Cats and Droste libraries seen in the other examples.
-// Cats defines Functors and other useful buildling blocks including property-based tests for laws.
-// Droste defines Fix along with cata and other recursion schemes.
-
-  // TODO move generalized building blocks into common file
-  // TODO define TreeF and Tree to illustrate reuse
 
 end NelFProps
