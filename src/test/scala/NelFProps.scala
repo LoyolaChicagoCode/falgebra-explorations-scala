@@ -68,4 +68,7 @@ object NelFProps extends Properties("Intro"):
 // Cats defines Functors and other useful buildling blocks including property-based tests for laws.
 // Droste defines Fix along with cata and other recursion schemes.
 
+  // TODO move generalized building blocks into common file
+  // TODO define TreeF and Tree to illustrate reuse
+
 end NelFProps
