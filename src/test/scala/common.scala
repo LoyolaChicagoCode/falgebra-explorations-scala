@@ -21,5 +21,5 @@ type FAlgebra[F[_], R] = F[R] => R
  * A type constructor for forming a recursive type over a functor,
  * along with the corresponding catamorphism (generalized fold).
  */
-case class Fix[F[_] : Functor](tail: F[Fix[F]])derives CanEqual:
+case class Fix[F[_]: Functor](tail: F[Fix[F]]) derives CanEqual:
   def cata[R](alg: FAlgebra[F, R]): R = alg(tail.map(c => c.cata(alg)))
