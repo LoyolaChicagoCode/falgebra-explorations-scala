@@ -1,7 +1,7 @@
 import org.scalacheck.Prop.*
 import org.scalacheck.{Prop, Properties}
 
-object FAlgebraIntroProps extends Properties("Intro"):
+object ExprFProps extends Properties("Intro"):
 
   // We'll start with a simplified version of the expressions structure.
 
@@ -165,45 +165,4 @@ object FAlgebraIntroProps extends Properties("Intro"):
   property("ExprFix.scale1") = Prop { constant(3).cata(scaleAlg(2)) == c6 }
   property("ExprFix.scale2") = Prop { e3.cata(scaleAlg(2)) == e2 }
 
-  // Finally, we can use these generalized building blocks to define other structures,
-  // such as nodes in a non-empty linked list (NEL), where H is the generic type of
-  // the value stored in the node and T is the type parameter of the functor.
-
-  type NelF[H, T] = (H, Option[T])
-
-  given consFunctor[H]: Functor[NelF[H, _]] with
-    override def mapImpl[A, B](e: NelF[H, A])(f: A => B): NelF[H, B] =
-      (e._1, e._2.map(f))
-
-  // (Technically, NelF is a bifunctor, i.e., a functor in terms of both H and T.
-  // The functor in terms of H corresponds to a map method for transforming the elements of the list.
-  // Here we focus on the functor in terms of T for defining the recursive structure and behaviors.)
-
-  def cons[H](value: H, next: Fix[NelF[H, _]]) =
-    Fix[NelF[H, _]](value, Some(next))
-  def point[H](value: H) = Fix[NelF[H, _]](value, None)
-
-  type NelAlgebra[H, R] = NelF[H, R] => R
-
-  def lengthAlg[H]: NelAlgebra[H, Int] =
-    case (_, Some(n)) => 1 + n
-    case (_, None)    => 1
-
-  def sumAlg: NelAlgebra[Int, Int] =
-    case (i, Some(s)) => i + s
-    case (i, None)    => i
-
-  val l = cons(1, cons(2, point(3)))
-
-  println("l = " + l)
-  println("len = " + l.cata(lengthAlg))
-  println("sum = " + l.cata(sumAlg))
-
-  property("Nel.length") = Prop { l.cata(lengthAlg) == 3 }
-  property("Nel.sum") = Prop { l.cata(sumAlg) == 6 }
-
-  // NOTE For pedagogical reasons, we eliminated the dependencies on the Cats and Droste libraries seen in the other examples.
-  // Cats defines Functors and other useful buildling blocks including property-based tests for laws.
-  // Droste defines Fix along with cata and other recursion schemes.
-
-end FAlgebraIntroProps
+end ExprFProps

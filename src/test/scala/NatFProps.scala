@@ -37,11 +37,10 @@ object NatFProps extends Properties("NatF"):
   /**
    * Declaration of `NatF` as an instance of typeclass `Functor` in Cats.
    */
-  given Functor[NatF] = new Functor[NatF] {
+  given Functor[NatF] = new Functor[NatF]:
     override def map[T, U](fa: NatF[T])(f: T => U): NatF[U] = fa match
       case Zero => Zero
       case Succ(n) => Succ(f(n))
-  }
 
   /**
    * Least fixpoint of `NatF` (recursive type based on `NatF`)
@@ -64,10 +63,9 @@ object NatFProps extends Properties("NatF"):
    * Conversion to `Int` as an `NatF`-algebra
    * for carrier object `Int` in the category Scala types.
    */
-  val toIntA: Algebra[NatF, Int] = Algebra {
+  val toIntA: Algebra[NatF, Int] = Algebra:
     case Zero => 0
     case Succ(n) if n >= 0 => n + 1
-  }
 
   // Using the catamorphism, we now can fold the `toInt` algebra into instances.
   // (This is an example of recursion.)
@@ -80,10 +78,9 @@ object NatFProps extends Properties("NatF"):
    * for carrier object `Int` in category Scala types
    * (generator for corecursion).
    */
-  val fromIntCoA: Coalgebra[NatF, Int] = Coalgebra {
+  val fromIntCoA: Coalgebra[NatF, Int] = Coalgebra:
     case 0 => Zero
     case n if n > 0 => Succ(n - 1)
-  }
 
   // Using the anamorphism on a coalgebra such as `fromInt`,
   // we can now unfold a `Nat` from an `Int`.
@@ -108,10 +105,9 @@ object NatFProps extends Properties("NatF"):
    *
    * @param m the number to which we are adding the argument of the algebra
    */
-  val plusA = (m: Nat) => Algebra[NatF, Nat] {
+  val plusA = (m: Nat) => Algebra[NatF, Nat]:
     case Zero => m
     case Succ(n) => succ(n)
-  }
 
   val plus = (m: Nat) => scheme.cata(plusA(m))
 
@@ -126,10 +122,9 @@ object NatFProps extends Properties("NatF"):
    *
    * @param m the number by which we are multiplying the argument of the algebra
    */
-  val timesA = (m: Nat) => Algebra[NatF, Nat] {
+  val timesA = (m: Nat) => Algebra[NatF, Nat]:
     case Zero => zero
     case Succ(n) => plus(m)(n)
-  }
 
   val times = (m: Nat) => scheme.cata(timesA(m))
 
@@ -150,10 +145,9 @@ object NatFProps extends Properties("NatF"):
    *
    * @return the current receiver times the accumulated result
    */
-  //  val oneOrTimes = GAlgebra[(Nat, *), NatF[Nat], Nat] {
+  //  val oneOrTimes = GAlgebra[(Nat, *), NatF[Nat], Nat]:
   //    case Zero => one
   //    case Succ((curr, acc)) => times(acc) succ (curr) cata times(acc)
-  //  }
 
   //  property("oneOrTimes20")    = Prop { (oneOrTimes(Zero) cata toIntA) == 1 }
   //  property("oneOrTimes12")    = Prop { (oneOrTimes(Succ(one, two)) cata toIntA) == 4 }
@@ -161,7 +155,7 @@ object NatFProps extends Properties("NatF"):
   //  property("paraOneOrTImes3") = Prop { (three para oneOrTimes cata toIntA) == 6 }
 
   // TODO table-driven property test
-  //  (0 to 5) zip Seq(1, 1, 2, 6, 24, 120) foreach { case (arg, result) =>
-  //    µ.unfold(arg)(fromInt) para oneOrTimes cata toInt assert_=== result
-  //  }
+  //  (0 to 5) zip Seq(1, 1, 2, 6, 24, 120) foreach:
+  //    case (arg, result) =>
+  //      µ.unfold(arg)(fromInt) para oneOrTimes cata toInt assert_=== result
 end NatFProps
