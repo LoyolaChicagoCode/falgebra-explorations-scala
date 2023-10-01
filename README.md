@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/LoyolaChicagoCode/falgebra-explorations-scala.svg?branch=master)](https://travis-ci.org/LoyolaChicagoCode/droste-explorations-scala)
+[![Scala CI](https://github.com/lucproglangcourse/falgebra-explorations-scala/actions/workflows/scala.yml/badge.svg)](https://github.com/lucproglangcourse/falgebra-explorations-scala/actions/workflows/scala.yml)
 [![codecov](https://codecov.io/gh/LoyolaChicagoCode/falgebra-explorations-scala/branch/master/graph/badge.svg)](https://codecov.io/gh/LoyolaChicagoCode/falgebra-explorations-scala)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/9f077fda29704e5d84691c2362bb637e)](https://www.codacy.com/app/laufer/falgebra-explorations-scala?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=LoyolaChicagoCode/droste-explorations-scala&amp;utm_campaign=Badge_Grade)
 [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org)
