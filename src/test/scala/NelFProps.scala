@@ -23,8 +23,6 @@ object NelFProps extends Properties("Intro"):
 
   type NelF[H, T] = (H, Option[T])
 
-  type Nel[H] = Fix[NelF[H, _]]
-
   given nelFunctor[H]: Functor[NelF[H, _]] with
     override def mapImpl[A, B](e: NelF[H, A])(f: A => B): NelF[H, B] =
       (e._1, e._2.map(f))
@@ -32,6 +30,8 @@ object NelFProps extends Properties("Intro"):
   // (Technically, NelF is a bifunctor, i.e., a functor in terms of both H and T.
   // The functor in terms of H corresponds to a map method for transforming the elements of the list.
   // Here we focus on the functor in terms of T for defining the recursive structure and behaviors.)
+
+  type Nel[H] = Fix[NelF[H, _]]
 
   def cons[H](value: H, next: Nel[H]): Nel[H] = Fix(value, Some(next))
   def point[H](value: H): Nel[H] = Fix(value, None)
