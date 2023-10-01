@@ -12,8 +12,8 @@ object NelFProps extends Properties("NelF"):
   type NelF[H, T] = (H, Option[T])
 
   given nelFunctor[H]: Functor[NelF[H, _]] with
-    override def mapImpl[A, B](e: NelF[H, A])(f: A => B): NelF[H, B] =
-      (e._1, e._2.map(f))
+    override def fmapImpl[A, B](e: NelF[H, A])(f: A => B): NelF[H, B] =
+      (e._1, e._2.map(f)) // uses Option.map - not a recursive call!
 
   // (Technically, NelF is a bifunctor, i.e., a functor in terms of both H and T.
   // The functor in terms of H corresponds to a map method for transforming the elements of the list.
@@ -40,12 +40,11 @@ object NelFProps extends Properties("NelF"):
 //    case (i, _)       => i
 
   val l = cons(1, cons(2, point(3)))
-  val p = point(7)
 
   println("l = " + l)
   println("l(1) = " + l.tail._2.get.tail._1)
   println("len = " + l.cata(lengthAlg))
-  println("sumAlg(point(7).tail) = " + sumAlg(p.tail.map(Function.const(0))))
+  println("sumAlg(point(7).tail) = " + sumAlg(point(7).tail.fmap(Function.const(0))))
   println("sum = " + l.cata(sumAlg))
 
   property("l(1)") = Prop { l.tail._2.get.tail._1 == 2 }

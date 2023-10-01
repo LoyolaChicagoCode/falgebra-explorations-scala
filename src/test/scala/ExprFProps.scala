@@ -87,7 +87,7 @@ object ExprFProps extends Properties("ExprF"):
   enum ExprF[A] derives CanEqual:
     case Constant(value: Int) extends ExprF[A]
     case Plus(children: List[A]) extends ExprF[A]
-    def map[B](f: A => B): ExprF[B] = this match
+    def fmap[B](f: A => B): ExprF[B] = this match
       case Constant(v) => Constant(v) // invariant
       case Plus(es) => Plus(es.map(f)) // uses List.map - not a recursive call!
 
@@ -99,7 +99,7 @@ object ExprFProps extends Properties("ExprF"):
   // The cata method is equivalent to dry above.
 
   case class ExprR(tail: ExprF[ExprR]) derives CanEqual:
-    def cata[R](alg: ExprFAlgebra[R]): R = alg(tail.map(c => c.cata(alg)))
+    def cata[R](alg: ExprFAlgebra[R]): R = alg(tail.fmap(c => c.cata(alg)))
 
   // Something to think about: where did the base case go?!?
 
@@ -141,7 +141,7 @@ object ExprFProps extends Properties("ExprF"):
   // it where we implement the map method (as the one already defined for ExprF).
 
   given exprFunctor: Functor[ExprF] with
-    override def mapImpl[A, B](e: ExprF[A])(f: A => B): ExprF[B] = e.map(f)
+    override def fmapImpl[A, B](e: ExprF[A])(f: A => B): ExprF[B] = e.fmap(f)
 
   type ExprFR = Fix[ExprF]
 
