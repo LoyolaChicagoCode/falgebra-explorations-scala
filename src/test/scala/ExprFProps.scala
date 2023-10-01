@@ -154,10 +154,12 @@ object ExprFProps extends Properties("Intro"):
   given exprFunctor: Functor[ExprF] with
     override def mapImpl[A, B](e: ExprF[A])(f: A => B): ExprF[B] = e.map(f)
 
+  type ExprFR = Fix[ExprF]
+
   // Factory methods like above but using the general Fix case class for building recursive structures:
 
-  def constant(value: Int) = Fix[ExprF](ExprF.Constant(value))
-  def plus(children: List[Fix[ExprF]]) = Fix[ExprF](ExprF.Plus(children))
+  def constant(value: Int): ExprFR = Fix(ExprF.Constant(value))
+  def plus(children: List[ExprFR]): ExprFR = Fix(ExprF.Plus(children))
 
   val e3 = plus(List(constant(5), constant(3)))
 
