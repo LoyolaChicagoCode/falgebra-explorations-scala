@@ -7,9 +7,12 @@
 [![Percentage of issues still open](http://isitmaintained.com/badge/open/LoyolaChicagoCode/droste-explorations-scala.svg)](http://isitmaintained.com/project/LoyolaChicagoCode/droste-explorations-scala "Percentage of issues still open")
 
 
-Basic examples using the [Droste](https://github.com/higherkindness/droste) library.
+Basic examples of recursive structures and behaviors based on F-algebras 
+(see also [this introduction](https://bartoszmilewski.com/2013/06/10/understanding-f-algebras).
 
-Also illustrates property-based testing using [ScalaCheck](https://www.scalacheck.org).
+These examples use Scala's higher-kinded types directly instead of relying on any third-party libraries for category theory or recursion schemes.
+
+This project also illustrates property-based testing using [ScalaCheck](https://www.scalacheck.org).
 
 To run the tests:
 
