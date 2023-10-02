@@ -1,5 +1,5 @@
-import org.scalacheck.Prop.*
-import org.scalacheck.{Prop, Properties}
+import org.scalacheck.{ Prop, Properties }
+import Prop.*
 
 object TreeFProps extends Properties("TreeF"):
 
