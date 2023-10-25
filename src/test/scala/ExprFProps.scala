@@ -15,7 +15,7 @@ object ExprFProps extends Properties("ExprF"):
 
   def size(e: Expr): Int = e match
     case Constant(v) => 1
-    case Plus(es)    => 1 + es.map(height).sum
+    case Plus(es)    => 1 + es.map(size).sum
 
   def height(e: Expr): Int = e match
     case Constant(v) => 1
